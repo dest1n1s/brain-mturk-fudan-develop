@@ -1,0 +1,10 @@
+Title:  Tell us about your online shopping experience
+AssignmentDurationInSeconds: 3600
+Reward: '0.20'
+AutoApprovalDelayInSeconds: 0
+Description: Tell us about your online shopping experience
+Keywords: Survey
+LifetimeInSeconds: 86400
+MaxAssignments: 1
+Question: string
+

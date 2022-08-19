@@ -1,0 +1,22 @@
+Title:  Can the plan accomplish the Goal?
+AssignmentDurationInSeconds: 3600
+Reward: '6.0'
+AutoApprovalDelayInSeconds: 259200
+Description: In this hit, you need to complete 20 data labeling tasks. In each task, you will be presented a general goal about everyday activities (such as “make a cake”) and a specific goal which inherits the general goal but is more specific and has a reasonable CONSTRAINT (such as “make a chocolate cake”).  You will answer 3 questions for each task.
+Keywords: Survey
+LifetimeInSeconds: 864000
+MaxAssignments: 2
+QualificationRequirements:
+  - Comparator: GreaterThanOrEqualTo
+    IntegerValues:
+    - 95
+    QualificationTypeId: 000000000000000000L0
+  - Comparator: GreaterThanOrEqualTo
+    IntegerValues:
+    - 100
+    QualificationTypeId: '00000000000000000040'
+  - Comparator: In
+    LocaleValues:
+    - Country: US
+    QualificationTypeId: '00000000000000000071'
+Question: string

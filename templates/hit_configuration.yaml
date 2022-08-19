@@ -1,0 +1,23 @@
+Title:  Tell us about your online shopping experience
+AssignmentDurationInSeconds: 300
+Reward: '0.20'
+AutoApprovalDelayInSeconds: 0
+Description: Tell us about your online shopping experience
+Keywords: Survey
+LifetimeInSeconds: 86400
+MaxAssignments: 100
+QualificationRequirements:
+  - Comparator: GreaterThanOrEqualTo
+    IntegerValues:
+    - 95
+    QualificationTypeId: 000000000000000000L0
+  - Comparator: GreaterThanOrEqualTo
+    IntegerValues:
+    - 100
+    QualificationTypeId: '00000000000000000040'
+  - Comparator: In
+    LocaleValues:
+    - Country: US
+    QualificationTypeId: '00000000000000000071'
+Question: string
+

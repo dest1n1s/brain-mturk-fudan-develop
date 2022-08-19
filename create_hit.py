@@ -1,0 +1,58 @@
+"""Module creates a HIT from a template and configuration stored in yaml file"""
+import argparse
+from jinja2 import Environment, FileSystemLoader, Markup
+from client import get_client
+from pprint import pprint
+import yaml
+import sys
+import os
+main_file_loader = FileSystemLoader('templates')
+main_env = Environment(loader=main_file_loader)
+# The following is needed just to check if xml is rendered correctly
+# from lxml import etree
+external_submit_live = 'https://www.mturk.com/mturk/externalSubmit'
+external_submit_sandbox = 'https://workersandbox.mturk.com/mturk/externalSubmit'
+
+
+def make_hit_from_template(html_file, template='template.xml', context=dict(), hit_configuration='hit_configuration', sandbox=True, number=0, title=None):
+    with open(f'./templates/{hit_configuration}.yaml', encoding='utf-8') as file:
+        hit_config = yaml.load(file, Loader=yaml.FullLoader)
+
+    # Override the title/description if it's specified
+    if title is not None:
+        hit_config['Title'] = title
+        hit_config['Description'] = title
+        
+    template = main_env.get_template(template)
+    context['endpoint'] = external_submit_sandbox if sandbox else external_submit_live
+    html_data = main_env.get_template(html_file).render(context)
+    html_question = template.render(html_data=html_data)
+    # this one is needed just to check that template was correctly rendered
+    # etree.fromstring(html_question)
+    # The following is just to quickly check up that template results in a correct html file
+    with open("logs/__temp.html", "w", encoding='utf-8') as file:
+        file.write(html_data)
+
+    hit_config['Question'] = html_question
+    hit_config['MaxAssignments'] = number
+    hit = get_client(sandbox=sandbox).create_hit(**hit_config)['HIT']
+    return hit
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Create a new HIT.')
+
+    parser.add_argument('--html', dest='html', help='HTML template to use, e.g. phase_one.html', required=True)
+    parser.add_argument('--config', dest='config', help='Base of config YAML file to use, e.g., hit_configuration', required=True)
+    parser.add_argument('--template', dest='template', help='Template to use, e.g., template.xml', default='template.xml')
+    parser.add_argument('--number', dest='number', type=int, help='How many assignments to create', required=True)
+    parser.add_argument('--sandbox', dest='sandbox', action='store_true', help='Whether to use the sandbox')
+    parser.add_argument('--title', dest='title', help='Title/description of the HIT', default=None)
+
+    args = parser.parse_args()
+
+    nlp_token = os.environ.get('NLP_TOKEN')    
+    pprint(make_hit_from_template(args.html, sandbox=args.sandbox, template=args.template,
+                                  title=args.title,
+                                  hit_configuration=args.config, number=args.number,
+                                  context=dict(nlp_token=nlp_token)).get('HITId'))

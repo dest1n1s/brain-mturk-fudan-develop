@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>HIT</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script type='text/javascript' src='https://s3.amazonaws.com/mturk-public/externalHIT_v1.js'></script>
+</head>
+
+<body>
+    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/@braid/vue-formulate@2.2.3/dist/snow.min.css'>
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans&display=swap'>
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css'>
+
+    <style>
+        /* imported snow theme */
+        body {
+            font-family: 'Open Sans';
+        }
+
+        pre {
+            background-color: #282c34;
+            padding: 1em;
+            border-radius: .5em;
+            color: #e2777a;
+            font-size: 1.1em;
+        }
+    </style>
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+
+                <div id="app" v-cloak>
+                    <formulate-form v-model='formValues' v-on:submit='checkForm' method='post' id='mturk_form'
+                        action='{{endpoint}}' ref="form">
+                        <formulate-input type="hidden" name='timeSpent' v-model='timeSpent' id='timeSpent'>
+                        </formulate-input>
+                        <input type="hidden" name='startTime' v-model='startTime' />
+                        <formulate-input type="hidden" name='endTime' v-model='endTime' id='endTime'></formulate-input>
+
+                        <formulate-input type="hidden" id="inputAssignmentId" name="assignmentId"
+                            v-model='assignmentId'> </formulate-input>
+                        <h2>
+                            Please fill in the provided questionnaire:
+                        </h2>
+
+
+                        <formulate-input name="purchase_1"
+                            label='Think about 3 items you recently purchased online.  Now, write down the product names or description for each, such as "Nike Air Jordan sneakers" or "toilet paper."'
+                            validation="required" placeholder="Your first recent purchase here">
+                        </formulate-input>
+                        <formulate-input name="purchase_2" label="" validation="required"
+                            placeholder="Your second recent purchase here"></formulate-input>
+                        <formulate-input name="purchase_3" label="" validation="required"
+                            placeholder="Your third recent purchase here"></formulate-input>
+
+                        <div v-if='true'>
+                            <formulate-input name="date_last_purchase" type="radio"
+                                label="When did you make your last purchase online?" :options="purchase_online_choices"
+                                validation="required"></formulate-input>
+
+                            <formulate-input name="online_frequency" type="radio"
+                                label="How often (on average) do you shop online?" :options="online_frequency_choices"
+                                validation="required"></formulate-input>
+
+                            <formulate-input name="shopping_device" type="radio"
+                                label="What device do you mostly use for online shopping?"
+                                :options="shopping_device_choices" validation="required"></formulate-input>
+
+                            <formulate-input v-model='phone_os' name="phone_os" type="radio"
+                                label="What operating system (OS) does your primary mobile phone have?"
+                                :options="phone_os_choices" validation="required"></formulate-input>
+
+                            <formulate-input v-if='phone_os==="1"' name="iphone_version" type="radio"
+                                label="What version of iPhone do you most frequently use?" :options="iosChoices"
+                                validation="required">
+                            </formulate-input>
+
+                            <formulate-input type="number" label="How old are you?" name='age' validation="required">
+                            </formulate-input>
+
+                            <formulate-input name="gender" type="radio" label="How do you describe yourself?"
+                                :options="gender_choices" validation="required"></formulate-input>
+
+                            <formulate-input :options="incomeChoices" type="select" placeholder="Select an option"
+                                name='income' validation="required"
+                                label="What is your total household income per year, including all earners in your household (after tax) in USD?">
+                            </formulate-input>
+
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <button type="submit" v-on:click='setTime' class='btn btn-primary btn-lg'>
+                                    Submit
+                                </button>
+                            </div>
+                        </div>
+
+
+
+
+                </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        document.getElementById('inputAssignmentId').value = urlParams.get('assignmentId')
+    </script>
+    <script src='https://cdn.jsdelivr.net/npm/vue@2.6.11/dist/vue.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/@braid/vue-formulate@2.5/dist/formulate.min.js'></script>
+    <script id="rendered-js">
+        /**
+         * When using the formulate.min.js distribution you
+         * need to use VueFormulate.default when registering.
+         **/
+        Vue.use(VueFormulate);
+        new Vue({
+            el: '#app',
+            delimiters: ["[[", "]]"],
+            data: {
+                formValues: {},
+                assignmentId: null,
+                phone_os: null,
+                timeSpent: null,
+                startTime: new Date(),
+                endTime: null,
+                iosChoices2: [{
+                    value: 'first',
+                    label: 'First',
+                    id: 'my-first'
+                },
+                {
+                    value: 'second',
+                    label: 'Second'
+                }
+                ],
+                gender_choices: {
+                    0: 'Male',
+                    1: 'Female',
+                    2: 'Trans Male/Trans Man',
+                    3: 'Trans Female/Trans Woman',
+                    4: 'Genderqueer/Gender Non Conforming',
+                    5: 'Different Identity',
+                    999: 'Prefer not to say',
+                },
+                phone_os_choices: {
+                    0: 'Android',
+                    1: 'iOS (iPhone)',
+                    2: 'Windows',
+                    3: 'Other/Not Applicable',
+                    4: 'Don\'t Know',
+                },
+                shopping_device_choices: {
+                    0: 'Mobile phone',
+                    1: 'Tablet',
+                    2: 'Laptop',
+                    3: 'Desktop',
+                    4: 'Other',
+                    999: 'Don\'t Know/Prefer not to say',
+                },
+                online_frequency_choices: {
+                    0: 'More than once a week',
+                    1: 'About once per week',
+                    2: 'Several times a month',
+                    3: 'About once a month',
+                    4: 'Once in a few months or longer',
+                    5: 'Never',
+                    999: 'Don\'t know/Prefer not to say'
+                },
+                purchase_online_choices: {
+                    0: 'Today',
+                    1: 'Yesterday or day before',
+                    2: '4 to 7 days ago',
+                    3: '1 to 3  weeks  ago',
+                    4: 'About a month ago',
+                    5: 'More than a month ago',
+                    6: 'Never',
+                },
+                iosChoices: {
+                    13: 'iPhone 13',
+                    12: 'iPhone 12',
+                    11: 'iPhone 11',
+                    10: 'iPhone X',
+                    8: 'iPhone 8',
+                    7: 'iPhone 7',
+                    6: 'Older than 7',
+                    99: 'Other',
+                    999: 'Do not know/ Prefer not to say'
+                },
+                incomeChoices: [{
+                    value: 1,
+                    label: 'Less than $10000'
+                },
+                {
+                    value: 2,
+                    label: '$10000–$15999'
+                },
+                {
+                    value: 3,
+                    label: '$16000–$19999'
+                },
+                {
+                    value: 4,
+                    label: '$20000–$29999'
+                },
+                {
+                    value: 5,
+                    label: '$30000–$39999'
+                },
+                {
+                    value: 6,
+                    label: '$40000–$49999'
+                },
+                {
+                    value: 7,
+                    label: '$50000–$59999'
+                },
+                {
+                    value: 8,
+                    label: '$60000–$69999'
+                },
+                {
+                    value: 9,
+                    label: '$70000–$79999'
+                },
+                {
+                    value: 10,
+                    label: '$80000–$89999'
+                },
+                {
+                    value: 11,
+                    label: '$90000–$99999'
+                },
+                {
+                    value: 12,
+                    label: '$100000–$149999'
+                },
+                {
+                    value: 13,
+                    label: 'More than $150000'
+                },
+                {
+                    value: 999,
+                    label: 'Prefer not to say'
+                },
+                ]
+            },
+            created() {
+
+            },
+            mounted() {
+                const urlParams = new URLSearchParams(window.location.search);
+
+                this.assignmentId = urlParams.get('assignmentId')
+            },
+            methods: {
+                setTime() { console.debug('submit clicked!') },
+                async checkForm(e) {
+
+                    this.endTime = new Date();
+                    this.timeSpent = this.endTime - this.startTime;
+                    console.debug(this.timeSpent, this.endTime)
+                    document.getElementById('timeSpent').value = this.timeSpent
+                    document.getElementById('endTime').value = this.endTime
+                    await document.getElementById('mturk_form').submit()
+
+                    return true;
+
+                },
+            }
+        });
+    </script>
+</body>
+
+</html>
