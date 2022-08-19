@@ -1,5 +1,11 @@
 # Python tools for managing MTurk surveys
 
+Use the command below to create the plan-goal annotation:
+
+```shell
+python create_hit.py --html index.html --config turker_parameter --number 20 --sandbox --title "your_hit_title"
+```
+
 ## `create_hit.py`
 
 Creates a new HIT. Example:
